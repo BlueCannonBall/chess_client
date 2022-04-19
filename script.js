@@ -74,7 +74,7 @@ function draw() {
             if (board[y].length == 8) {
                 for (let x = 0; x < 8; x++) {
                     if (pieceImages[board[y][x]] && pieceImages[board[y][x]].loaded) {
-                        ctx.drawImage(pieceImages[board[y][x]].image, y * cellSize, x * cellSize, cellSize, cellSize)
+                        ctx.drawImage(pieceImages[board[y][x]].image, x * cellSize, y * cellSize, cellSize, cellSize)
                     }
                 }
             }
@@ -117,6 +117,7 @@ function connect() {
         switch (packet.type) {
             case "game_board": {
                 board = packet.board;
+                notify("Turn", `${packet.winner == 0 ? "White" : "Black"}'s turn`);
                 break;
             }
 
