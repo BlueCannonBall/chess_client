@@ -136,9 +136,6 @@ function connect() {
                 break;
             }
         }
-        if (packet.type == "game_board") {
-            board = packet.board;
-        }
     }
 }
 
