@@ -35,7 +35,7 @@ let toastBody = document.getElementById("toastBody");
 let board = [];
 
 urlInput.value = localStorage.getItem("url");
-urlInput.addEventListener("keyup", function(e) {
+urlInput.addEventListener("keyup", function (e) {
     if (e.key === "Enter") {
         connect();
     }
@@ -84,6 +84,11 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+function setInputDisabled(state) {
+    connectBtn.disabled = state;
+    urlInput.disabled = state;
+}
+
 function connect() {
     let url = urlInput.value;
     localStorage.setItem("url", url);
@@ -97,22 +102,19 @@ function connect() {
     } catch {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
-        connectBtn.disabled = false;
-        urlInput.disabled = false;
+        setInputDisabled(false);
         connectBtn.innerText = "Connect";
         return;
     }
 
     ws.onopen = function () {
-        connectBtn.disabled = true;
-        urlInput.disabled = true;
+        setInputDisabled(true);
         connectBtn.innerText = "Connected";
     }
     ws.onerror = function (e) {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
-        connectBtn.disabled = false;
-        urlInput.disabled = false;
+        setInputDisabled(false);
         connectBtn.innerText = "Connect";
     }
     ws.onmessage = function (message) {
