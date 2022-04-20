@@ -98,18 +98,21 @@ function connect() {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
         connectBtn.disabled = false;
+        urlInput.disabled = false;
         connectBtn.innerText = "Connect";
         return;
     }
 
     ws.onopen = function () {
         connectBtn.disabled = true;
+        urlInput.disabled = true;
         connectBtn.innerText = "Connected";
     }
     ws.onerror = function (e) {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
         connectBtn.disabled = false;
+        urlInput.disabled = false;
         connectBtn.innerText = "Connect";
     }
     ws.onmessage = function (message) {
@@ -117,7 +120,7 @@ function connect() {
         switch (packet.type) {
             case "game_board": {
                 board = packet.board;
-                notify("Turn", `${packet.winner == 0 ? "White" : "Black"}'s turn`);
+                notify("Turn", `${packet.turn == 0 ? "White" : "Black"}'s turn`);
                 break;
             }
 
