@@ -22,6 +22,8 @@ for (let i = 1; i <= 6; i++) {
 let toast = document.getElementById("toast");
 let toastHeader = document.getElementById("toastHeader");
 let toastBody = document.getElementById("toastBody");
+let previousToastTimeout;
+let previousShakeTimeout;
 
 let board = [];
 let selection = { x: 0, y: 0, active: false };
@@ -40,7 +42,8 @@ function notify(header, message, duration = 5000) {
     toastBody.innerText = message;
     toast.style.animation = "appear 1s";
     toast.style.animationFillMode = "forwards";
-    setTimeout(function () {
+    clearTimeout(previousToastTimeout);
+    previousToastTimeout = setTimeout(function () {
         toast.style.animation = "disappear 1s";
         toast.style.animationFillMode = "forwards";
     }, duration);
@@ -48,7 +51,8 @@ function notify(header, message, duration = 5000) {
 
 function shake() {
     canvas.style.animation = "shake 0.82s cubic-bezier(.36,.07,.19,.97) both";
-    setTimeout(function () {
+    clearTimeout(previousShakeTimeout);
+    previousShakeTimeout = setTimeout(function () {
         canvas.style.animation = null;
     }, 820);
 }
