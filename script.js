@@ -120,7 +120,9 @@ canvas.onmousedown = function () {
                     selection.y = y;
                     selection.active = true;
                 } else {
-                    if (window.ws && intentInput.value == "player") {
+                    if ((selection.x != x || selection.y != y) &&
+                        window.ws &&
+                        intentInput.value == "player") {
                         window.ws.send(JSON.stringify({
                             type: "make_move",
                             from: [selection.x, selection.y],
