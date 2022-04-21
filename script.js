@@ -1,4 +1,5 @@
 const urlInput = document.getElementById("urlInput");
+const intentInput = document.getElementById("intentInput");
 const connectBtn = document.getElementById("connectBtn");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -33,8 +34,11 @@ let toastHeader = document.getElementById("toastHeader");
 let toastBody = document.getElementById("toastBody");
 
 let board = [];
+let selection = { x: 0, y: 0, active: false };
+let mpos = { x: 0, y: 0 };
 
 urlInput.value = localStorage.getItem("url");
+if (localStorage.hasOwnProperty("intent")) { intentInput.value = localStorage.getItem("intent"); }
 urlInput.addEventListener("keyup", function (e) {
     if (e.key === "Enter") {
         connect();
@@ -59,6 +63,10 @@ function shake() {
     }, 820);
 }
 
+function aabb(x1, y1, x2, y2, w, h) {
+    return (x1 >= x2) && (y1 >= y2) && (x1 < x2 + w) && (y1 < y2 + h);
+}
+
 function draw() {
     let cellSize = Math.min(canvas.width, canvas.height) / 8;
 
@@ -66,6 +74,22 @@ function draw() {
         for (let x = 0; x < 8; x++) {
             ctx.fillStyle = ((x + y) % 2) ? "#b58863" : "#f0d9b5";
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+    }
+
+    if (intentInput.value == "player") {
+        if (selection.active) {
+            ctx.fillStyle = "#37bf5c77";
+            ctx.fillRect(selection.x * cellSize, selection.y * cellSize, cellSize, cellSize);
+        }
+    }
+
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            if (aabb(mpos.x, mpos.y, x * cellSize, y * cellSize, cellSize, cellSize)) {
+                ctx.fillStyle = "#469ce377";
+                ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
         }
     }
 
@@ -84,19 +108,58 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+function getMousePosition(canvas, event) {
+    let rect = canvas.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+    return { x, y };
+}
+
+canvas.onmousemove = function (e) {
+    mpos = getMousePosition(canvas, e);
+}
+
+canvas.onmousedown = function () {
+    let cellSize = Math.min(canvas.width, canvas.height) / 8;
+
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            if (aabb(mpos.x, mpos.y, x * cellSize, y * cellSize, cellSize, cellSize)) {
+                if (!selection.active) {
+                    selection.x = x;
+                    selection.y = y;
+                    selection.active = true;
+                } else {
+                    if (window.ws && intentInput.value == "player") {
+                        window.ws.send(JSON.stringify({
+                            type: "make_move",
+                            from: [selection.x, selection.y],
+                            to: [x, y]
+                        }));
+                    }
+                    selection.active = false;
+                }
+                return;
+            }
+        }
+    }
+}
+
 function setInputDisabled(state) {
     connectBtn.disabled = state;
     urlInput.disabled = state;
+    intentInput.disabled = state;
 }
 
 function connect() {
     let url = urlInput.value;
     localStorage.setItem("url", url);
+    localStorage.setItem("intent", intentInput.value);
     if ((!url.startsWith("ws://")) && (!url.startsWith("wss://"))) {
         url = "ws://" + url;
     }
 
-    let ws;
+    window.ws = null;
     try {
         ws = new WebSocket(url);
     } catch {
@@ -104,22 +167,29 @@ function connect() {
         shake();
         setInputDisabled(false);
         connectBtn.innerText = "Connect";
+        window.ws = null;
         return;
     }
 
     ws.onopen = function () {
         setInputDisabled(true);
         connectBtn.innerText = "Connected";
+        ws.send(JSON.stringify({
+            type: "join",
+            intent: intentInput.value
+        }));
     }
     ws.onclose = function () {
         setInputDisabled(false);
         connectBtn.innerText = "Connect";
+        window.ws = null;
     }
-    ws.onerror = function (e) {
+    ws.onerror = function () {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
         setInputDisabled(false);
         connectBtn.innerText = "Connect";
+        window.ws = null;
     }
     ws.onmessage = function (message) {
         let packet = JSON.parse(message.data);
