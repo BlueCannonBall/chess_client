@@ -5,24 +5,14 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const pieceImages = {};
-pieceImages[[1, 0]] = { image: new Image(), loaded: false };
-pieceImages[[1, 1]] = { image: new Image(), loaded: false };
-pieceImages[[2, 0]] = { image: new Image(), loaded: false };
-pieceImages[[2, 1]] = { image: new Image(), loaded: false };
-pieceImages[[3, 0]] = { image: new Image(), loaded: false };
-pieceImages[[3, 1]] = { image: new Image(), loaded: false };
-pieceImages[[4, 0]] = { image: new Image(), loaded: false };
-pieceImages[[4, 1]] = { image: new Image(), loaded: false };
-pieceImages[[5, 0]] = { image: new Image(), loaded: false };
-pieceImages[[5, 1]] = { image: new Image(), loaded: false };
-pieceImages[[6, 0]] = { image: new Image(), loaded: false };
-pieceImages[[6, 1]] = { image: new Image(), loaded: false };
 for (let i = 1; i <= 6; i++) {
+    pieceImages[[i, 0]] = { image: new Image(), loaded: false };
     pieceImages[[i, 0]].image.src = `/assets/pieces/${i}_0.png`;
     pieceImages[[i, 0]].image.addEventListener("load", function () {
         pieceImages[[i, 0]].loaded = true;
     }, false);
 
+    pieceImages[[i, 1]] = { image: new Image(), loaded: false };
     pieceImages[[i, 1]].image.src = `/assets/pieces/${i}_1.png`;
     pieceImages[[i, 1]].image.addEventListener("load", function () {
         pieceImages[[i, 1]].loaded = true;
