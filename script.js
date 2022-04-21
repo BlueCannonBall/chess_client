@@ -111,6 +111,10 @@ function connect() {
         setInputDisabled(true);
         connectBtn.innerText = "Connected";
     }
+    ws.onclose = function () {
+        setInputDisabled(false);
+        connectBtn.innerText = "Connect";
+    }
     ws.onerror = function (e) {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
