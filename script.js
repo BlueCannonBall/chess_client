@@ -62,6 +62,7 @@ function aabb(x1, y1, x2, y2, w, h) {
 }
 
 function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     let cellSize = Math.min(canvas.width, canvas.height) / 8;
 
     for (let y = 0; y < 8; y++) {
