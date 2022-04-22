@@ -162,14 +162,14 @@ function connect() {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
         setInputDisabled(false);
-        connectBtn.innerText = "Connect";
+        connectBtn.innerText = "🔌 Connect";
         window.ws = null;
         return;
     }
 
     ws.onopen = function () {
         setInputDisabled(true);
-        connectBtn.innerText = "Connected";
+        connectBtn.innerText = "🔌 Connected";
         ws.send(JSON.stringify({
             type: "join",
             intent: intentInput.value
@@ -177,14 +177,14 @@ function connect() {
     }
     ws.onclose = function () {
         setInputDisabled(false);
-        connectBtn.innerText = "Connect";
+        connectBtn.innerText = "🔌 Connect";
         window.ws = null;
     }
     ws.onerror = function () {
         notify("WebSocket Error", "The WebSocket connection has failed.");
         shake();
         setInputDisabled(false);
-        connectBtn.innerText = "Connect";
+        connectBtn.innerText = "🔌 Connect";
         window.ws = null;
     }
     ws.onmessage = function (message) {
