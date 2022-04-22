@@ -38,7 +38,7 @@ urlInput.addEventListener("keyup", function (e) {
 });
 
 function notify(header, message, duration = 5000) {
-    toastHeader.innerText = header;
+    toastHeader.innerText = "💡 " + header;
     toastBody.innerText = message;
     toast.style.animation = "appear 1s";
     toast.style.animationFillMode = "forwards";
