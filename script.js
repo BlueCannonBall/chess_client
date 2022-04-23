@@ -121,9 +121,13 @@ canvas.onmousedown = function () {
         for (let x = 0; x < 8; x++) {
             if (aabb(mpos.x, mpos.y, x * cellSize, y * cellSize, cellSize, cellSize)) {
                 if (!selection.active) {
-                    selection.x = x;
-                    selection.y = y;
-                    selection.active = true;
+                    try {
+                        if (board[y][x][0] != 0) {
+                            selection.x = x;
+                            selection.y = y;
+                            selection.active = true;
+                        }
+                    } catch {}
                 } else {
                     if ((selection.x != x || selection.y != y) &&
                         window.ws &&
